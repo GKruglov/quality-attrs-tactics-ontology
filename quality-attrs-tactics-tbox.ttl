@@ -1,0 +1,172 @@
+@prefix : <https://gkruglov.github.io/quality-attrs-tactics-ontology/ns#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+### --- Базовые классы ---
+:QualityAttribute a owl:Class ;
+    rdfs:label "Атрибут качества" ;
+    rdfs:comment "Характеристика системы, не связанная напрямую с её функциональностью (например, доступность, производительность, безопасность), но определяющая её качество и измеряемая с помощью конкретных метрик (SLA, время отклика, процент ошибок и т. п.).Характеристика системы, не связанная напрямую с её функциональностью (например, доступность, производительность, безопасность), но определяющая её качество и измеряемая с помощью конкретных метрик (SLA, время отклика, процент ошибок и т. п.).".
+
+:Tactic a owl:Class ;
+    rdfs:label "Тактика" ;
+    rdfs:comment "Элементарный приём или конструктивный «строительный блок» архитектуры, направленный на достижение конкретного атрибута качества системы (например, доступности, производительности или безопасности).".
+
+:TacticCategory a owl:Class ;
+    rdfs:label "Категория тактик" ;
+    rdfs:comment "Совокупность элементарных приёмов (тактик), нацеленных на обеспечение одного и того же атрибута качества (например, все тактики доступности, все тактики производительности и т. д.).".
+
+:Scenario a owl:Class ;
+    rdfs:label "Сценарий" ;
+    rdfs:comment "Структура для описания сценариев качества (нефункциональных требований), предложенная Леном Бассом и соавторами в книге Software Architecture in Practice.".
+
+### --- Иерархия атрибутов качества ---
+:Performance a owl:Class ;
+    rdfs:subClassOf :QualityAttribute ;
+    rdfs:label "Производительность" ;
+    rdfs:comment "Способность системы обрабатывать запросы быстро и эффективно.".
+
+:Availability a owl:Class ;
+    rdfs:subClassOf :QualityAttribute ;
+    rdfs:label "Доступность" ;
+    rdfs:comment "Способность системы оставаться работоспособной при сбоях.".
+
+:Scalability a owl:Class ;
+    rdfs:subClassOf :QualityAttribute ;
+    rdfs:label "Масштабируемость" ;
+    rdfs:comment "Способность системы адаптироваться к увеличению нагрузки".
+
+:Testability a owl:Class ;
+    rdfs:subClassOf :QualityAttribute ;
+    rdfs:label "Тестируемость" ;
+    rdfs:comment "Способность системы к эффективному тестированию для выявления дефектов.".
+
+:Usability a owl:Class ;
+    rdfs:subClassOf :QualityAttribute ;
+    rdfs:label "Удобство использования" ;
+    rdfs:comment "Удобство взаимодействия пользователя с системой".
+
+### --- Иерархия категорий тактик ---
+:AvailabilityTactics a owl:Class ;
+    rdfs:subClassOf :TacticCategory ,
+        [
+            a owl:Restriction ;
+            owl:onProperty :targetsAttribute ;
+            owl:hasValue :Availability
+        ] ;
+    rdfs:label "Тактики доступности" ;
+    rdfs:comment "Категория тактик для атрибута доступности" .
+
+:FaultDetectionTactics a owl:Class ;
+    rdfs:subClassOf :AvailabilityTactics ;
+    rdfs:label "Тактики обнаружения сбоев" ;
+    rdfs:comment "Подкатегория тактик доступности для обнаружения сбоев".
+
+### --- Свойства ---
+## Свойства сценариев
+:hasID a owl:DatatypeProperty ;
+    rdfs:domain :Scenario ;
+    rdfs:range xsd:string ;
+    rdfs:label "Идентификатор".
+
+:hasDescription a owl:DatatypeProperty ;
+    rdfs:domain :Scenario ;
+    rdfs:range xsd:string ;
+    rdfs:label "Описание".
+
+:hasStimulus a owl:DatatypeProperty ;
+    rdfs:domain :Scenario ;
+    rdfs:range xsd:string ;
+    rdfs:label "Стимул".
+
+:hasResponse a owl:DatatypeProperty ;
+    rdfs:domain :Scenario ;
+    rdfs:range xsd:string ;
+    rdfs:label "Ответ системы".
+
+:hasEnvironment a owl:DatatypeProperty ;
+    rdfs:domain :Scenario ;
+    rdfs:range xsd:string ;
+    rdfs:label "Контекст".
+
+:hasSource a owl:DatatypeProperty ;
+    rdfs:domain :Scenario ;
+    rdfs:range xsd:string ;
+    rdfs:label "Источник стимула".
+
+:hasArtifact a owl:DatatypeProperty ;
+    rdfs:domain :Scenario ;
+    rdfs:range xsd:string ;
+    rdfs:label "Артефакт".
+
+:hasResponseMeasure a owl:DatatypeProperty ;
+    rdfs:domain :Scenario ;
+    rdfs:range xsd:string ;
+    rdfs:label "Мера ответа".
+
+## Свойства тактик
+:isRelatedTactic a owl:SymmetricProperty ;
+    rdfs:domain :Tactic ;
+    rdfs:range :Tactic ;
+    rdfs:label "Связанная тактика".
+
+:belongsToCategory a owl:ObjectProperty ;
+    rdfs:domain :Tactic ;
+    rdfs:range :TacticCategory ;
+    rdfs:label "Принадлежит к категории" ;
+    rdfs:comment "Связь тактики с её категорией".
+
+:hasApplicabilityConditions a owl:DatatypeProperty ;
+    rdfs:domain :Tactic ;
+    rdfs:range xsd:string ;
+    rdfs:label "Условия применения".
+
+:hasConsequences a owl:DatatypeProperty ;
+    rdfs:domain :Tactic ;
+    rdfs:range xsd:string ;
+    rdfs:label "Последствия применения".
+
+## --- Свойства категорий тактик
+:targetsAttribute a owl:ObjectProperty ;
+    rdfs:domain :TacticCategory ;
+    rdfs:range :QualityAttribute ;
+    rdfs:label "Целевой атрибут качества" ;
+    rdfs:comment "Связывает категорию тактик с целевым ыатрибутом качества".
+
+### --- Аксиомы ---
+:indirectTargetsAttribute a owl:ObjectProperty ;
+    owl:propertyChainAxiom (:belongsToCategory :targetsAttribute) ;
+    rdfs:domain :Tactic ;
+    rdfs:range :QualityAttribute ;
+    rdfs:label "Целевой атрибут качества".
+
+### --- Примеры сценариев ---
+:AvailabilityScenario1 a :Scenario ;
+    :hasID "AV-001" ;
+    :hasDescription "Обеспечение доступности при сбое платежного шлюза" ;
+    :hasStimulus "Сбой в работе платежного шлюза" ;
+    :hasResponse "Переключение на резервный платежный провайдер" ;
+    :hasContext "Интернет-магазин" ;
+    :hasResponseMeasure "Время переключения ≤ 3 сек." ;
+    :hasSource "Системный мониторинг" ;
+    :hasArtifact "Платежный модуль" .
+
+:PerformanceScenario1 a :Scenario ;
+    :hasID "PF-001" ;
+    :hasDescription "Обработка резкого роста трафика" ;
+    :hasStimulus "Резкий рост трафика" ;
+    :hasResponse "Автоматическое масштабирование микросервисов" ;
+    :hasContext "Интернет-магазин" ;
+    :hasResponseMeasure "Задержка ≤ 1 сек, масштабирование до 100 экземпляров" ;
+    :hasSource "Пользовательские запросы" ;
+    :hasArtifact "Микросервисы" .
+
+:ReliabilityScenario1 a :Scenario ;
+    :hasID "RL-001" ;
+    :hasDescription "Обработка сбоя микросервиса аутентификации" ;
+    :hasStimulus "Сбой микросервиса аутентификации" ;
+    :hasResponse "Переход в режим ограниченной функциональности (например, кэширование сессий)" ;
+    :hasContext "Интернет-магазин" ;
+    :hasResponseMeasure "Время восстановления ≤ 10 сек, доступность основных функций ≥ 90%" ;
+    :hasSource "Системный мониторинг" ;
+    :hasArtifact "Микросервис аутентификации" .

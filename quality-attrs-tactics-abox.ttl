@@ -1,0 +1,110 @@
+@prefix : <https://gkruglov.github.io/quality-attrs-tactics-ontology/ns#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+### --- Импорт TBox ---
+<> owl:imports <https://raw.githubusercontent.com/GKruglov/quality-attrs-tactics-ontology/main/quality-attrs-tactics-tbox.ttl> .
+
+
+### ----------------------------------------
+### Экземпляры тактик обнаружения сбоев (ABox)
+### ----------------------------------------
+
+### --- Тактики ---
+:Monitor a :Tactic ;
+    rdfs:label "Монитор";
+    rdfs:comment "Компонент, отслеживающий состояние работоспособности других частей системы (процессоры, процессы, ввод/вывод, память и т. д.).";
+    :belongsToCategory :FaultDetectionTactics ;
+    :hasApplicabilityConditions "Система должна предоставлять метрики и данные о состоянии компонентов";
+    :hasConsequences "Увеличение нагрузки на систему из-за сбора и анализа данных, сложность настройки и интерпретации результатов";
+    :relatedTactic :Heartbeat, :PingEcho, :SelfTest .
+
+:PingEcho a :Tactic ;
+    rdfs:label "Ping/Echo";
+    rdfs:comment "Обмен асинхронной парой запрос/ответ между узлами для определения достижимости и задержки в сети.";
+    :belongsToCategory :FaultDetectionTactics ;
+    :hasApplicabilityConditions "Сеть должна поддерживать обмен сообщениями, требуется определение тайм-аута";
+    :hasConsequences "Ложные срабатывания при временных задержках в сети, дополнительный трафик";
+    :relatedTactic :Monitor .
+
+:Heartbeat a :Tactic ;
+    rdfs:label "Heartbeat";
+    rdfs:comment "Периодический обмен сообщениями между монитором системы и отслеживаемым процессом.";
+    :belongsToCategory :FaultDetectionTactics ;
+    :hasApplicabilityConditions "Требуется синхронизация между монитором и процессом, необходимость обработки пропущенных сердцебиений";
+    :hasConsequences "Нагрузка на сеть и процессор, сложность определения оптимального интервала сердцебиений";
+    :relatedTactic :Monitor .
+
+:Timestamp a :Tactic ;
+    rdfs:label "Timestamp";
+    rdfs:comment "Обнаружение неправильной последовательности событий, особенно в распределенных системах обмена сообщениями.";
+    :belongsToCategory :FaultDetectionTactics ;
+    :hasApplicabilityConditions "Система должна обеспечивать механизмы для генерации и сравнения временных меток или порядковых номеров";
+    :hasConsequences "Сложность синхронизации времени в распределенных системах, накладные расходы на генерацию и обработку меток";
+    :relatedTactic :ConditionMonitoring .
+
+:ConditionMonitoring a :Tactic ;
+    rdfs:label "Condition Monitoring";
+    rdfs:comment "Проверка условий в процессе или устройстве, проверка допущений, сделанных во время проектирования.";
+    :belongsToCategory :FaultDetectionTactics ;
+    :hasApplicabilityConditions "Необходимость определения проверяемых условий и метрик, возможность автоматизированной проверки";
+    :hasConsequences "Сложность определения исчерпывающего набора условий, риск пропустить важные проблемы";
+    :relatedTactic :SanityChecking, :Timestamp .
+
+:SanityChecking a :Tactic ;
+    rdfs:label "Sanity Checking";
+    rdfs:comment "Проверка допустимости или разумности конкретных операций или выходных данных компонента.";
+    :belongsToCategory :FaultDetectionTactics ;
+    :hasApplicabilityConditions "Требуется знание ожидаемых значений и ограничений, возможность автоматизированной проверки";
+    :hasConsequences "Ограниченная область применения, возможность пропустить сложные или неочевидные ошибки";
+    :relatedTactic :ConditionMonitoring .
+
+:Voting a :Tactic ;
+    rdfs:label "Voting";
+    rdfs:comment "Сравнение результатов вычислений из нескольких источников и выбор результатов для использования.";
+    :belongsToCategory :FaultDetectionTactics ;
+    :hasApplicabilityConditions "Необходимость наличия нескольких независимых источников данных, алгоритм голосования";
+    :hasConsequences "Увеличение сложности и стоимости системы, необходимость обработки расхождений в данных";
+    :relatedTactic :Replication, :FunctionalRedundancy, :AnalyticRedundancy .
+
+:ExceptionDetection a :Tactic ;
+    rdfs:label "Exception Detection";
+    rdfs:comment "Обнаружение условия системы, которое изменяет нормальный поток выполнения.";
+    :belongsToCategory :FaultDetectionTactics ;
+    :hasApplicabilityConditions "Система должна поддерживать механизм исключений, определение типов исключений";
+    :hasConsequences "Сложность обработки всех возможных исключений, влияние на производительность при частом возникновении исключений";
+    :relatedTactic :SystemExceptions, :ParameterFence, :ParameterTyping, :Timeout .
+
+:SelfTest a :Tactic ;
+    rdfs:label "Self-Test";
+    rdfs:comment "Процедуры самотестирования компонентов или подсистем для проверки правильности работы.";
+    :belongsToCategory :FaultDetectionTactics ;
+    :hasApplicabilityConditions "Возможность реализации автоматизированных тестов, определение критериев успешного прохождения";
+    :hasConsequences "Увеличение сложности разработки и сопровождения, ограниченный охват (не все проблемы могут быть выявлены)";
+    :relatedTactic :ConditionMonitoring .
+
+### --- Подтактики для Exception Detection ---
+:SystemExceptions a :Tactic ;
+    rdfs:label "System Exceptions";
+    rdfs:comment "Исключения, зависящие от архитектуры процессора (например, деление на ноль).";
+    :belongsToCategory :FaultDetectionTactics ;
+    :hasApplicabilityConditions "Зависит от используемой аппаратной архитектуры";
+    :hasConsequences "Требует обработки на уровне операционной системы или оборудования";
+    :relatedTactic :ExceptionDetection .
+
+:ParameterTyping a :Tactic ;
+    rdfs:label "Parameter Typing";
+    rdfs:comment "Обеспечение согласованности типов параметров сообщений между отправителем и получателем.";
+    :belongsToCategory :FaultDetectionTactics ;
+    :hasApplicabilityConditions "Применимо к системам обмена сообщениями";
+    :hasConsequences "Усложнение структуры сообщений и обработки параметров";
+    :relatedTactic :ExceptionDetection .
+
+:Timeout a :Tactic ;
+    rdfs:label "Timeout";
+    rdfs:comment "Генерация исключения при несоблюдении временных ограничений.";
+    :belongsToCategory :FaultDetectionTactics ;
+    :hasApplicabilityConditions "Требуется определение временных ограничений";
+    :hasConsequences "Возможны ложные срабатывания, сложность определения оптимальных тайм-аутов";
+    :relatedTactic :ExceptionDetection .
