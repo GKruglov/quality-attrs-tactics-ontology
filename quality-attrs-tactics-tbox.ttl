@@ -46,6 +46,11 @@
     rdfs:label "Удобство использования" ;
     rdfs:comment "Удобство взаимодействия пользователя с системой".
 
+:Safety a owl:Class ;
+    rdfs:subClassOf :QualityAttribute ;
+    rdfs:label "Безопасность (Safety)" ;  # Using "Безопасность (Safety)" to distinguish from "Security" if needed later.
+    rdfs:comment "Способность системы избегать состояний, которые могут привести к ущербу, травмам или другим неприемлемым последствиям." .
+
 ### --- Иерархия категорий тактик ---
 :AvailabilityTactics a owl:Class ;
     rdfs:subClassOf :TacticCategory ,
@@ -57,10 +62,36 @@
     rdfs:label "Тактики доступности" ;
     rdfs:comment "Категория тактик для атрибута доступности" .
 
+:SafetyTactics a owl:Class ;
+    rdfs:subClassOf :TacticCategory ,
+        [
+            a owl:Restriction ;
+            owl:onProperty :targetsAttribute ;
+            owl:hasValue :Safety
+        ] ;
+    rdfs:label "Тактики безопасности (Safety Tactics)" ;
+    rdfs:comment "Категория тактик для атрибута безопасности (предотвращение ущерба)." .
+
 :FaultDetectionTactics a owl:Class ;
     rdfs:subClassOf :AvailabilityTactics ;
     rdfs:label "Тактики обнаружения сбоев" ;
     rdfs:comment "Подкатегория тактик доступности для обнаружения сбоев".
+
+:UnsafeStateDetectionTactics a owl:Class ;
+    rdfs:subClassOf :SafetyTactics ;
+    rdfs:label "Тактики обнаружения небезопасных состояний (Unsafe State Detection Tactics)" ;
+    rdfs:comment "Подкатегория тактик безопасности, направленных на обнаружение состояний системы, которые могут привести к ущербу." .
+
+:ContainmentTactics a owl:Class ;
+    rdfs:subClassOf :SafetyTactics ;
+    rdfs:label "Тактики сдерживания (Containment Tactics)" ;
+    rdfs:comment "Подкатегория тактик безопасности, направленных на ограничение области или серьезности последствий после возникновения сбоя или опасного состояния." .
+
+:RedundancyTactics a owl:Class ;
+    rdfs:subClassOf :ContainmentTactics ;
+    rdfs:label "Тактики избыточности (Redundancy Tactics)" ;
+    rdfs:comment "Подкатегория тактик сдерживания, которые используют дублирование компонентов или функций для предотвращения распространения отказа и ограничения его воздействия, обеспечивая продолжение функционирования или безопасное состояние." .
+
 
 ### --- Свойства ---
 ## Свойства сценариев
